@@ -13,23 +13,36 @@ ASCharacter::ASCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	SpringArmComp->SetupAttachment(RootComponent);
-	SpringArmComp->TargetArmLength = 500.f;
+	SpringArmComp->TargetArmLength = 300.f;
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
+	
+	speed = 150;
 }
 
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	GEngine->AddOnScreenDebugMessage(-1,5,FColor::Red,"hello world");
+
 	
+}
+
+void ASCharacter::MoveForward(float value)
+{
+	AddMovementInput(GetActorForwardVector(),value*speed);
+}
+
+void ASCharacter::MoveRight(float value)
+{
+	AddMovementInput(GetActorRightVector(),value*speed);
 }
 
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime); 
+
 
 }
 
@@ -37,6 +50,8 @@ void ASCharacter::Tick(float DeltaTime)
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	PlayerInputComponent->BindAxis("MoveForward",this,&ASCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight",this,&ASCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("Turn",this,&ASCharacter::AddControllerYawInput);
 }
 
