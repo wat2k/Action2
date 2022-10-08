@@ -3,6 +3,8 @@
 
 #include "SCharacter.h"
 
+#include <RenderDebug.h>
+
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -30,12 +32,18 @@ void ASCharacter::BeginPlay()
 
 void ASCharacter::MoveForward(float value)
 {
-	AddMovementInput(GetActorForwardVector(),value*speed);
+	FVector Forward = CameraComp->GetForwardVector();
+	Forward.Z=0;
+	Forward.Normalize();
+	AddMovementInput(Forward,value*speed);
 }
 
 void ASCharacter::MoveRight(float value)
 {
-	AddMovementInput(GetActorRightVector(),value*speed);
+	FVector Forward = CameraComp->GetRightVector();
+	Forward.Z=0;
+	Forward.Normalize();
+	AddMovementInput(Forward,value*speed);
 }
 
 // Called every frame
@@ -53,5 +61,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveForward",this,&ASCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight",this,&ASCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn",this,&ASCharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUp",this,&ASCharacter::AddControllerPitchInput);
+	PlayerInputComponent->BindAction("Jump",IE_Pressed,this,&ASCharacter::Jump);
 }
 
