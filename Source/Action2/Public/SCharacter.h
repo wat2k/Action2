@@ -13,6 +13,8 @@ class ACTION2_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere)
@@ -26,12 +28,13 @@ protected:
 	virtual void BeginPlay() override;
 	void MoveForward(float value);
 	void MoveRight(float value);
-
+	void PrimaryAttack();
 	float speed;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 
 	
 	// Called to bind functionality to input

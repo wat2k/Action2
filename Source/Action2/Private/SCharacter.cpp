@@ -6,6 +6,7 @@
 #include <RenderDebug.h>
 
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
@@ -15,10 +16,14 @@ ASCharacter::ASCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	SpringArmComp->SetupAttachment(RootComponent);
-	SpringArmComp->TargetArmLength = 300.f;
+	SpringArmComp->TargetArmLength = 400.f;
+	SpringArmComp->bUsePawnControlRotation = true;
+	
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
-	
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationYaw = false;
 	speed = 150;
 }
 
@@ -46,6 +51,14 @@ void ASCharacter::MoveRight(float value)
 	AddMovementInput(Forward,value*speed);
 }
 
+void ASCharacter::PrimaryAttack()
+{
+	FTransform SpawnTM = FTransform(GetActorRotation(),GetMesh()->GetSocketLocation("Muzzle_01"));
+	FActorSpawnParameters SpawnParms;
+	SpawnParms.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParms);
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
@@ -63,5 +76,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("Turn",this,&ASCharacter::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp",this,&ASCharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAction("Jump",IE_Pressed,this,&ASCharacter::Jump);
+
+	PlayerInputComponent->BindAction("PrimaryAttack",IE_Pressed,this,&ASCharacter::PrimaryAttack);
 }
 
